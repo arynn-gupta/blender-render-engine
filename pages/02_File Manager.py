@@ -57,7 +57,7 @@ def main():
 
         st.button("Go Back", disabled = path == og_path, on_click = go_back)
 
-        next_path = st.selectbox("Traverse", [name for name in os.listdir(path) if os.path.isdir(os.path.join(path, name))].sort(key = sort_by_type))
+        next_path = st.selectbox("Traverse", [name for name in os.listdir(path).sort(key = sort_by_type) if os.path.isdir(os.path.join(path, name))])
         st.button("Next", disabled = len([entry for entry in os.listdir(path) if os.path.isdir(os.path.join(path, entry))]) == 0, on_click = next, args = [next_path])
 
         file_path = st.selectbox("File", os.listdir(path).sort(key = sort_by_type))
