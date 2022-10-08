@@ -43,7 +43,13 @@ def main():
 
     st.title("File Manager")
 
-    st.write(os.path.dirname("./"))
+    try:
+        while 1:
+            os.chdir('..')
+    except:
+        pass
+
+    st.write(os.getcwd())
     
     if "original_path" not in st.session_state :
         st.session_state["original_path"] = os.path.expanduser('~')
