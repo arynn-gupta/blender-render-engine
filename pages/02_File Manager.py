@@ -43,7 +43,7 @@ def main():
 
     st.title("File Manager")
 
-    st.write(os.path.basename())
+    st.write(os.path.basename("./"))
     
     if "original_path" not in st.session_state :
         st.session_state["original_path"] = os.path.expanduser('~')
