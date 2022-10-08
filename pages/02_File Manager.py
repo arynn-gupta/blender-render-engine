@@ -1,5 +1,5 @@
 import streamlit as st
-from lib.utils import styling, rendering
+from lib.utils import styling
 import os, shutil
 
 # list filse in dict format
@@ -39,7 +39,6 @@ def list_files():
 
 def main():
     styling()
-    rendering()
 
     st.title("File Manager")
     

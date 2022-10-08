@@ -5,7 +5,7 @@ from streamlit.runtime.scriptrunner import add_script_run_ctx
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
-from lib.utils import styling, execute, rendering
+from lib.utils import styling, execute
 from threading import Thread
 
 blender_url_dict = {
@@ -26,7 +26,6 @@ blender_url_dict = {
 
 def main():
     styling()
-    rendering()
     
     st.title("Blender Render Engine")
 

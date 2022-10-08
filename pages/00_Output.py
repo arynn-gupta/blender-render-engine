@@ -6,7 +6,7 @@ import datetime as dt
 import os, shutil
 from itertools import cycle
 import lib.dummy
-from lib.utils import styling, rendering
+from lib.utils import styling
 
 class Watchdog(FileSystemEventHandler):
     def __init__(self, hook):
@@ -30,7 +30,6 @@ def install_monitor():
 
 def main():
     styling()
-    rendering()
 
     st.title("Output")
 
@@ -40,6 +39,9 @@ def main():
         if "monitor_filesystem" not in st.session_state:
             st.session_state["monitor_filesystem"] = "running"
             install_monitor()
+
+        if "rendering" in st.session_state :
+            st.success("Rendering...")
 
         if len(os.listdir('output')) != 0:
             output = "XRender-Output"
