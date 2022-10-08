@@ -2,12 +2,11 @@ import streamlit as st
 import wget
 import os, subprocess, shutil, zipfile
 import datetime as dt
-from streamlit.runtime.scriptrunner import add_script_run_ctx
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
 from lib.utils import styling, sidebar, update_state
-from threading import Thread
+import multiprocessing as mp
 
 blender_url_dict = {
     '2.79b'   : "https://ftp.nluug.nl/pub/graphics/blender/release/Blender2.79/blender-2.79b-linux-glibc219-x86_64.tar.bz2",
@@ -151,9 +150,12 @@ def main():
                     ./{blender_version}/blender -b 'project/{blend_file_path}' -P setgpu.py -E CYCLES -o '{output_path}' -noaudio -f {start_frame} -- --cycles-device "{renderer}"
                     '''
             st.sidebar.success("Rendering...")
-            render = Thread(target=background_render, args=(script, "render"))
-            add_script_run_ctx(render)
-            render.start()
+            try:
+                render = mp.Process(target=background_render, args=(script, "render"), daemon=True)
+                render.start()
+            except:
+                render.join()
+            render.join()
         else :
             st.error("Blend file path doesn't exist.")
         
