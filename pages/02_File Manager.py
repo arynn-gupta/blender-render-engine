@@ -63,9 +63,9 @@ def main():
         
         download_file_path = st.selectbox("Download", os.listdir(path))
         file_path = st.session_state["current_path"]+"/"+download_file_path
-        path = Path(file_path).stem
+        file_name = Path(file_path).stem
         output = "Temp-Download"
-        output_file_name = path + ".zip"
+        output_file_name = file_name + ".zip"
         shutil.make_archive(output, 'zip', file_path)
         file = open(f"{output_file_name}", "rb")
         st.download_button(
