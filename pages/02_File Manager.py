@@ -32,13 +32,12 @@ def delete(path):
 
 def download(download_file_path):
     file_path = st.session_state["current_path"]+"/"+download_file_path
-    output = "Temp-Download"
     file_name = Path(file_path).stem
     output_file_name = file_name + ".zip"
     if(os.path.isfile(file_path)):
-        shutil.make_archive(output, 'zip', st.session_state["current_path"], download_file_path)
+        shutil.make_archive(file_name, 'zip', st.session_state["current_path"], download_file_path)
     else:
-        shutil.make_archive(output, 'zip', file_path)
+        shutil.make_archive(file_name, 'zip', file_path)
     file = open(f"{output_file_name}", "rb")
     st.download_button(
             label="Download Zip",
@@ -82,7 +81,7 @@ def main():
         st.button("🗑️", disabled= len(os.listdir(path))==0, on_click = delete, args = [del_path])
         
         download_file_path = st.selectbox("Download", os.listdir(path))
-        st.button("⬇️", disabled= len(os.listdir(path))==0, on_click = download, args = [download_file_path])
+        st.button("Make Zip", disabled= len(os.listdir(path))==0, on_click = download, args = [download_file_path])
 
         next_path = st.selectbox("Traverse", [name for name in os.listdir(path) if os.path.isdir(os.path.join(path, name))])
         st.button("Next", disabled = len([entry for entry in os.listdir(path) if os.path.isdir(os.path.join(path, entry))]) == 0, on_click = next, args = [next_path])
