@@ -150,6 +150,7 @@ def main():
                 script=f'''
                     ./{blender_version}/blender -b 'project/{blend_file_path}' -P setgpu.py -E CYCLES -o '{output_path}' -noaudio -f {start_frame} -- --cycles-device "{renderer}"
                     '''
+            st.sidebar.success("Rendering...")
             render = Thread(target=background_render, args=(script, "render"))
             add_script_run_ctx(render)
             render.start()
