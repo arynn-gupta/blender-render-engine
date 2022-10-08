@@ -127,6 +127,10 @@ def main():
     
     st.title("Blender Render Engine")
 
+    if "initialized" not in st.session_state :
+        st.session_state["initialized"] = True
+        update_state("rendering = False")
+
     if not os.path.isdir("logs"):
         os.mkdir("logs")
     if not os.path.exists("output"):
@@ -146,6 +150,7 @@ def main():
     else:
         animation = False
         start_frame = st.number_input("Frame", min_value=0 , step=1)
+        end_frame = start_frame
 
     gpu_enabled = st.checkbox("GPU Render", value=True)
     cpu_enabled = st.checkbox("CPU Render", value=True)
