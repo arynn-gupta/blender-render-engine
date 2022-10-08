@@ -5,7 +5,7 @@ from streamlit.runtime.scriptrunner import add_script_run_ctx
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
-from lib.utils import styling, execute
+from lib.utils import styling, execute, sidebar, update_state
 from threading import Thread
 
 blender_url_dict = {
@@ -26,11 +26,10 @@ blender_url_dict = {
 
 def main():
     styling()
+    sidebar()
     
     st.title("Blender Render Engine")
 
-    if "initialized" not in st.session_state:
-        st.session_state["initialized"] = True
     if not os.path.isdir("logs"):
         os.mkdir("logs")
     if not os.path.exists("output"):
@@ -56,12 +55,10 @@ def main():
 
     output_name = st.text_input("Output Name", value="blender-####")
 
-    btn = st.empty()
-    submitted = btn.button("Start Render", key="submitted")
+    submit = st.button("Start Render")
 
-    if submitted and uploaded_file is not None :
-        submitted = btn.button("Rendering", disabled=True, key="submitted_disabled")
-        st.session_state['rendering'] = True
+    if submit and uploaded_file is not None :
+        update_state("rendering = True")
 
         if (os.path.isdir("project")):
             shutil.rmtree("project")
@@ -74,8 +71,9 @@ def main():
             with zipfile.ZipFile(uploaded_file, 'r') as zip_ref:
                 zip_ref.extractall("project")
         else:
-            with open(f"project/{uploaded_file.name}", 'wb') as f: 
-                f.write(uploaded_file.getvalue())
+            file = open(f"project/{uploaded_file.name}", 'wb')
+            file.write(uploaded_file.getvalue())
+            file.close()
 
         blender_url = blender_url_dict[blender_version]
         base_url = os.path.basename(blender_url)
@@ -108,8 +106,9 @@ def main():
             "        device.use = "+str(gpu_enabled)+"\n"+\
             "    else:\n"+\
             "        device.use = "+str(cpu_enabled)+"\n"
-        with open('setgpu.py', 'w') as f:
-            f.write(data)
+        file = open('setgpu.py', 'w')
+        file.write(data)
+        file.close()
         renderer = "CUDA"
 
         output_path = 'output/' + output_name
@@ -134,8 +133,7 @@ def main():
         else :
             st.error("Blend file path doesn't exist.")
 
-        if "rendering" in st.session_state:
-            del st.session_state['rendering']
+        update_state("rendering = False")
         
 if __name__ == '__main__':
     main()

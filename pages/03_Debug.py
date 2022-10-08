@@ -1,9 +1,10 @@
 import streamlit as st
-from lib.utils import styling
+from lib.utils import styling, sidebar
 import os, subprocess, select
 
 def main():
     styling()
+    sidebar()
 
     st.title("Debug")
 

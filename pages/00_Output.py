@@ -6,7 +6,7 @@ import datetime as dt
 import os, shutil
 from itertools import cycle
 import lib.dummy
-from lib.utils import styling
+from lib.utils import styling, sidebar
 
 class Watchdog(FileSystemEventHandler):
     def __init__(self, hook):
@@ -17,8 +17,9 @@ class Watchdog(FileSystemEventHandler):
 
 def update_dummy_module():
     dummy_path = "lib/dummy.py"
-    with open(dummy_path, "w") as fp:
-        fp.write(f'timestamp = "{dt.datetime.now()}"')
+    file = open(dummy_path, "w")
+    file.write(f'timestamp = "{dt.datetime.now()}"')
+    file.close()
 
 def install_monitor():
     observer = Observer()
@@ -30,6 +31,7 @@ def install_monitor():
 
 def main():
     styling()
+    sidebar()
 
     st.title("Output")
 
@@ -40,22 +42,20 @@ def main():
             st.session_state["monitor_filesystem"] = "running"
             install_monitor()
 
-        if "rendering" in st.session_state :
-            st.success("Rendering...")
-
         if len(os.listdir('output')) != 0:
             output = "XRender-Output"
             output_file_name = output + ".zip"
             if os.path.exists(output_file_name):
                 os.remove(output_file_name)
             shutil.make_archive(output, 'zip', "output")
-            with open(f"{output_file_name}", "rb") as file:
-                st.download_button(
-                        label="Download Zip",
-                        data=file,
-                        file_name=f"{output_file_name}",
-                        mime="application/zip"
-                    )
+            file = open(f"{output_file_name}", "rb")
+            st.download_button(
+                    label="Download Zip",
+                    data=file,
+                    file_name=f"{output_file_name}",
+                    mime="application/zip"
+                )
+            file.close()
 
         mimetypes.init()
         images=[]

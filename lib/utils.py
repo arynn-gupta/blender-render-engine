@@ -2,6 +2,7 @@ import streamlit as st
 import datetime as dt
 import subprocess
 from icons import *
+from lib.state import rendering
 
 style='''
 div.css-1gk2i2l.e17lx80j0 {
@@ -70,9 +71,7 @@ def execute(command, logfile):
   file = open("logs/"+logfile+".log", "a") 
   file.write(str(dt.datetime.now())+"\n")
   file.flush()
-  file.close()
   process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-  file = open("logs/"+logfile+".log", "a") 
 
   for line in iter(process.stdout.readline, ""):
     try:
@@ -88,6 +87,12 @@ def execute(command, logfile):
   if return_code:
           raise subprocess.CalledProcessError(return_code, command)
 
-def rendering():
-  if "rendering" in st.session_state :
+def sidebar():
+  if rendering :
       st.sidebar.success("Rendering...")
+
+def update_state(var):
+  path = "lib/state.py"
+  file = open(path, "w") 
+  file.write(var)
+  file.close()
