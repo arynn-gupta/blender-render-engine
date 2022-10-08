@@ -157,12 +157,8 @@ def main():
     if submit and uploaded_file is not None :
         
         st.sidebar.success("Rendering...")
-        try:
-            render = mp.Process(target=background_render, args=(uploaded_file, blender_version, blend_file_path, animation,  start_frame, end_frame, gpu_enabled, cpu_enabled, output_name), daemon=True)
-            render.start()
-        except:
-            pass
-        render.join()
+        render = mp.Process(target=background_render, args=(uploaded_file, blender_version, blend_file_path, animation,  start_frame, end_frame, gpu_enabled, cpu_enabled, output_name), daemon=True)
+        render.start()
         
 if __name__ == '__main__':
     main()
