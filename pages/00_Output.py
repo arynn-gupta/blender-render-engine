@@ -45,8 +45,6 @@ def main():
         if len(os.listdir('output')) != 0:
             output = "XRender-Output"
             output_file_name = output + ".zip"
-            if os.path.exists(output_file_name):
-                os.remove(output_file_name)
             shutil.make_archive(output, 'zip', "output")
             file = open(f"{output_file_name}", "rb")
             st.download_button(
@@ -56,6 +54,8 @@ def main():
                     mime="application/zip"
                 )
             file.close()
+            if os.path.exists(output_file_name):
+                os.remove(output_file_name)
 
         mimetypes.init()
         images=[]
