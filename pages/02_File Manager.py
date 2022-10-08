@@ -84,13 +84,13 @@ def main():
 
         next_path = st.selectbox("Traverse", [name for name in os.listdir(path) if os.path.isdir(os.path.join(path, name))])
         st.button("Next", disabled = len([entry for entry in os.listdir(path) if os.path.isdir(os.path.join(path, entry))]) == 0, on_click = next, args = [next_path])
-        st.markdown("***")
 
         file_path = st.selectbox("File", os.listdir(path))
         col1, col2, col3 = st.columns(3)
         col1.button("🗑️", disabled= len(os.listdir(path))==0, on_click = delete, args = [file_path])
-        col2.button("Make Zip", disabled= len(os.listdir(path))==0, on_click = download, args = ([file_path], col3))
+        col2.button("Make Zip", disabled= len(os.listdir(path))==0, on_click = download, args = (file_path, col3))
 
+        st.markdown("***")
         list_files()
 
 if __name__ == '__main__':
