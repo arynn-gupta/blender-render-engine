@@ -42,6 +42,8 @@ def main():
     sidebar()
 
     st.title("File Manager")
+
+    st.write(os.path.abspath("./"))
     
     if "original_path" not in st.session_state :
         st.session_state["original_path"] = os.path.expanduser('~')
