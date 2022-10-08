@@ -36,7 +36,7 @@ def main():
     st.title("Output")
 
     
-    if (os.path.isdir("output")):
+    if os.path.exists("output"):
 
         if "monitor_filesystem" not in st.session_state:
             st.session_state["monitor_filesystem"] = "running"
