@@ -6,7 +6,7 @@ import datetime as dt
 import os, shutil
 from itertools import cycle
 import lib.dummy
-from lib.utils import styling, sidebar
+from lib.utils import styling, sidebar, make_zip
 
 class Watchdog(FileSystemEventHandler):
     def __init__(self, hook):
@@ -42,20 +42,21 @@ def main():
             st.session_state["monitor_filesystem"] = "running"
             install_monitor()
 
-        if len(os.listdir('output')) != 0:
-            output = "XRender-Output"
-            output_file_name = output + ".zip"
-            shutil.make_archive(output, 'zip', "output")
-            file = open(f"{output_file_name}", "rb")
-            st.download_button(
-                    label="Download Zip",
-                    data=file,
-                    file_name=f"{output_file_name}",
-                    mime="application/zip"
-                )
-            file.close()
-            if os.path.exists(output_file_name):
-                os.remove(output_file_name)
+        col1, col2 = st.columns(2)
+        col1.button("Make Zip", disabled= len(os.listdir("output"))==0, on_click = make_zip, args = ("output", col2))
+        output = "XRender-Output"
+        output_file_name = output + ".zip"
+        shutil.make_archive(output, 'zip', "output")
+        file = open(f"{output_file_name}", "rb")
+        st.download_button(
+                label="Download Zip",
+                data=file,
+                file_name=f"{output_file_name}",
+                mime="application/zip"
+            )
+        file.close()
+        if os.path.exists(output_file_name):
+            os.remove(output_file_name)
 
         mimetypes.init()
         images=[]

@@ -1,8 +1,9 @@
 import streamlit as st
 import datetime as dt
-import subprocess
+import os, subprocess, shutil
 from icons import *
 from lib.state import rendering
+from pathlib import Path
 
 style='''
 div.css-1gk2i2l.e17lx80j0 {
@@ -98,3 +99,28 @@ def update_state(var):
   file = open(path, "w") 
   file.write(var)
   file.close()
+
+
+def clear_download(output_file_name, ele):
+    if os.path.exists(output_file_name):
+        os.remove(output_file_name)
+    ele.empty()
+
+def make_zip(download_file_path, ele):
+    file_path = st.session_state["current_path"]+"/"+download_file_path
+    file_name = Path(file_path).stem
+    output_file_name = file_name + ".zip"
+    if(os.path.isfile(file_path)):
+        shutil.make_archive(file_name, 'zip', st.session_state["current_path"], download_file_path)
+    else:
+        shutil.make_archive(file_name, 'zip', file_path)
+    file = open(f"{output_file_name}", "rb")
+    ele.download_button(
+            label="Download Zip",
+            data=file,
+            file_name=f"{output_file_name}",
+            mime="application/zip",
+            on_click =clear_download,
+            args=(output_file_name, ele)
+        )
+    file.close()

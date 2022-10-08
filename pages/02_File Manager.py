@@ -1,8 +1,6 @@
 import streamlit as st
-from lib.utils import styling, sidebar
-from pathlib import Path
+from lib.utils import styling, sidebar, make_zip
 import os, shutil
-import psutil
 
 # list filse in dict format
 # def tree(dir, folder):
@@ -30,30 +28,6 @@ def delete(path):
         else:
             os.remove(del_path)
 
-def clear_download(output_file_name, col3):
-    if os.path.exists(output_file_name):
-        os.remove(output_file_name)
-    col3.empty()
-
-def download(download_file_path, col3):
-    file_path = st.session_state["current_path"]+"/"+download_file_path
-    file_name = Path(file_path).stem
-    output_file_name = file_name + ".zip"
-    if(os.path.isfile(file_path)):
-        shutil.make_archive(file_name, 'zip', st.session_state["current_path"], download_file_path)
-    else:
-        shutil.make_archive(file_name, 'zip', file_path)
-    file = open(f"{output_file_name}", "rb")
-    col3.download_button(
-            label="Download Zip",
-            data=file,
-            file_name=f"{output_file_name}",
-            mime="application/zip",
-            on_click =clear_download,
-            args=(output_file_name, col3)
-        )
-    file.close()
-
 def list_files():
     path = st.session_state["current_path"]
     for i in os.listdir(path):
@@ -68,8 +42,6 @@ def main():
     sidebar()
 
     st.title("File Manager")
-    
-    st.write(psutil.disk_partitions())
 
     if "original_path" not in st.session_state :
         st.session_state["original_path"] = "."
@@ -88,7 +60,7 @@ def main():
         file_path = st.selectbox("File", os.listdir(path))
         col1, col2, col3 = st.columns(3)
         col1.button("🗑️", disabled= len(os.listdir(path))==0, on_click = delete, args = [file_path])
-        col2.button("Make Zip", disabled= len(os.listdir(path))==0, on_click = download, args = (file_path, col3))
+        col2.button("Make Zip", disabled= len(os.listdir(path))==0, on_click = make_zip, args = (file_path, col3))
 
         st.markdown("***")
         list_files()
