@@ -6,7 +6,7 @@ from streamlit.runtime.scriptrunner import add_script_run_ctx
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
-from lib.utils import styling, background_render, sidebar, update_state
+from lib.utils import styling, sidebar, update_state
 from threading import Thread
 
 blender_url_dict = {
