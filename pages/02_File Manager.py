@@ -47,6 +47,10 @@ def main():
     
     st.write(psutil.disk_partitions())
 
+    if "original_path" not in st.session_state :
+        st.session_state["original_path"] = "./"
+        st.session_state["current_path"] = st.session_state["original_path"]
+
     path = st.session_state["current_path"]
     og_path = st.session_state["original_path"]
 
