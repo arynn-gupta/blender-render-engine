@@ -1,7 +1,7 @@
 import streamlit as st
-from lib.utils import styling, sidebar
 from streamlit_autorefresh import st_autorefresh
 import os
+from lib.utils import styling, sidebar
 
 def main():
     styling()

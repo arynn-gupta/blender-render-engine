@@ -1,9 +1,8 @@
 import streamlit as st
-import datetime as dt
-import os, subprocess, shutil
+import os, shutil
 from icons import *
-from lib.state import rendering
 from pathlib import Path
+from lib.state import rendering
 
 style='''
 div.css-1gk2i2l.e17lx80j0 {
@@ -68,28 +67,6 @@ def styling():
       li:nth-child(5) span:before {  content: '''+bug+'''; }
   </style>''', unsafe_allow_html=True)
 
-def background_render(command, logfile):
-  file = open("logs/"+logfile+".log", "a") 
-  file.write(str(dt.datetime.now())+"\n")
-  file.flush()
-  process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-
-  for line in iter(process.stdout.readline, ""):
-    try:
-      line = line.decode("utf-8") 
-      if (line != ''):
-          file.write(line)
-          file.flush()
-    except:
-      pass
-  file.close()
-
-  return_code = process.wait()
-  if return_code:
-    raise subprocess.CalledProcessError(return_code, command)
-  else:
-    update_state("rendering = False")
-
 def sidebar():
   if rendering :
       st.sidebar.success("Rendering...")
@@ -99,7 +76,6 @@ def update_state(var):
   file = open(path, "w") 
   file.write(var)
   file.close()
-
 
 def clear_download(output_file_name, ele):
     if os.path.exists(output_file_name):

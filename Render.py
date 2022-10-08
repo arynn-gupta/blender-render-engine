@@ -1,6 +1,7 @@
 import streamlit as st
 import wget
 import os, subprocess, shutil, zipfile
+import datetime as dt
 from streamlit.runtime.scriptrunner import add_script_run_ctx
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
@@ -23,6 +24,28 @@ blender_url_dict = {
     '3.2.2'   : "https://ftp.nluug.nl/pub/graphics/blender/release/Blender3.2/blender-3.2.2-linux-x64.tar.xz",
     '3.3.0'   : "https://ftp.nluug.nl/pub/graphics/blender/release/Blender3.3/blender-3.3.0-linux-x64.tar.xz"
 }
+
+def background_render(command, logfile):
+  file = open("logs/"+logfile+".log", "a") 
+  file.write(str(dt.datetime.now())+"\n")
+  file.flush()
+  process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+  for line in iter(process.stdout.readline, ""):
+    try:
+      line = line.decode("utf-8") 
+      if (line != ''):
+          file.write(line)
+          file.flush()
+    except:
+      pass
+  file.close()
+
+  return_code = process.wait()
+  if return_code:
+    raise subprocess.CalledProcessError(return_code, command)
+  else:
+    update_state("rendering = False")
 
 def main():
     styling()

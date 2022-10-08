@@ -3,10 +3,10 @@ import mimetypes
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 import datetime as dt
-import os, shutil
+import os
 from itertools import cycle
-import lib.dummy
 from lib.utils import styling, sidebar, make_zip
+import lib.dummy
 
 class Watchdog(FileSystemEventHandler):
     def __init__(self, hook):
