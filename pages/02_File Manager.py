@@ -46,10 +46,11 @@ def main():
     try:
         while 1:
             os.chdir('..')
+            st.write(os.getcwd())
     except:
         pass
 
-    st.write(os.getcwd())
+    
     
     if "original_path" not in st.session_state :
         st.session_state["original_path"] = os.path.expanduser('~')
