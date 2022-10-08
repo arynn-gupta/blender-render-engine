@@ -13,7 +13,9 @@ def main():
     logfile_path = "logs/render.log"
     if os.path.exists(logfile_path):
         file = open(logfile_path,mode='r')
-        file.read()
+        content = file.read()
+        for line in content:
+            st.write(f"`{line}`")
         file.close()
 
 if __name__ == '__main__':
