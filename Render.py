@@ -1,10 +1,12 @@
 import streamlit as st
 import wget
-import os, shutil, zipfile
+import os, shutil, zipfile, socketserver
+from streamlit.runtime.scriptrunner import add_script_run_ctx
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
-from lib.utils import styling, execute, initialize
+from lib.utils import styling, execute
+from threading import Thread
 
 blender_url_dict = {
     '2.79b'   : "https://ftp.nluug.nl/pub/graphics/blender/release/Blender2.79/blender-2.79b-linux-glibc219-x86_64.tar.bz2",
@@ -24,9 +26,15 @@ blender_url_dict = {
 
 def main():
     styling()
-    initialize()
     
     st.title("Blender Render Engine")
+
+    if "initialized" not in st.session_state:
+        st.session_state["initialized"] = True
+    if not os.path.isdir("logs"):
+        os.mkdir("logs")
+    if not os.path.exists("output"):
+        os.mkdir("output")
     
     uploaded_file = st.file_uploader("", type=['blend', 'zip'])
     blender_version = st.selectbox("Blender Version", ['2.79b', '2.80rc3', '2.81a', '2.82a', '2.83.20', '2.90.1', '2.91.2', '2.92.0', '2.93.10', '3.0.1', '3.1.2', '3.2.2', '3.3.0'][::-1])
@@ -120,7 +128,10 @@ def main():
                 script=f'''
                     ./{blender_version}/blender -b 'project/{blend_file_path}' -P setgpu.py -E CYCLES -o '{output_path}' -noaudio -f {start_frame} -- --cycles-device "{renderer}"
                     '''
-            execute(script, logfile="render")
+            render = Thread(target=execute, args=(script, "render"))
+            add_script_run_ctx(render)
+            render.start()
+            render.join()
         else :
             st.error("Blend file path doesn't exist.")
 

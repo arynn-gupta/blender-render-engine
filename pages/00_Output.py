@@ -6,7 +6,7 @@ import datetime as dt
 import os, shutil
 from itertools import cycle
 import lib.dummy
-from lib.utils import styling
+from lib.utils import styling, rendering
 
 class Watchdog(FileSystemEventHandler):
     def __init__(self, hook):
@@ -30,20 +30,18 @@ def install_monitor():
 
 def main():
     styling()
+    rendering()
 
     st.title("Output")
 
     
     if (os.path.isdir("output")):
 
-        if not "monitor_filesystem" in st.session_state:
+        if "monitor_filesystem" not in st.session_state:
             st.session_state["monitor_filesystem"] = "running"
             install_monitor()
 
-        if "rendering" in st.session_state :
-            st.success("Rendering...")
-
-        if not len(os.listdir('output')) == 0:
+        if len(os.listdir('output')) != 0:
             output = "XRender-Output"
             output_file_name = output + ".zip"
             if os.path.exists(output_file_name):

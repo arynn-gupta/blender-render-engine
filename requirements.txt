@@ -3,6 +3,5 @@ psutil
 gpu-info
 py-cpuinfo
 wget
-browsepy
 backports.shutil-get-terminal-size
 scandir

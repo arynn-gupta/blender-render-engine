@@ -1,30 +1,63 @@
 import streamlit as st
-from lib.utils import styling
-import os
+from lib.utils import styling, rendering
+import os, shutil
 
-def tree(dir, folder):
-    for filename in os.listdir(dir):
-        if os.path.isdir(os.path.join(dir,filename)):
-            folder[filename] ={}
-            tree(os.path.join(dir,filename), folder[filename])
+# list filse in dict format
+# def tree(dir, folder):
+#     for filename in os.listdir(dir):
+#         if os.path.isdir(os.path.join(dir,filename)):
+#             folder[filename] ={}
+#             tree(os.path.join(dir,filename), folder[filename])
+#         else:
+#             folder[filename] = "file"
+#     return folder
+
+def  go_back():
+    cur_path = st.session_state["current_path"]
+    cur_path_idx = cur_path.rindex("/")
+    st.session_state["current_path"] = st.session_state["current_path"][:cur_path_idx]
+
+def next(next_path):
+    st.session_state["current_path"] += "/"+next_path
+
+def delete(path):
+    del_path = st.session_state["current_path"]+"/"+path
+    if os.path.exists(del_path):
+        if os.path.isdir(del_path):
+            shutil.rmtree(del_path)
         else:
-            folder[filename] = "file"
-    return folder
+            os.remove(del_path)
+
+def list_files():
+    path = st.session_state["current_path"]
+    for i in os.listdir(path):
+        full_path = f"{path}/{i}"
+        if os.path.isdir(full_path):
+            st.write("📁 "+i)
+        else:
+            st.write("🗃️ "+i)
 
 def main():
     styling()
+    rendering()
 
     st.title("File Manager")
+    
+    if "original_path" not in st.session_state :
+        st.session_state["original_path"] = "output"
+        st.session_state["current_path"] = st.session_state["original_path"]
 
-    if "browsepy_port" in st.session_state:
-        browsepy_port = st.session_state["browsepy_port"]
-        link=f'http://172.20.130.6:{browsepy_port}'
-        st.caption(f"Serving on : {link}")
-        html_string = f'<iframe style="border:2px solid #f63366; border-radius:10px;" width="600" height="400" src={link}></iframe>'
-        st.markdown(html_string, unsafe_allow_html=True)
+    path = st.session_state["current_path"]
+    og_path = st.session_state["original_path"]
 
-    else:
-        st.write(tree(".",dict()))
+    if os.path.exists(path):
+        st.button("Go Back", disabled = path == og_path, on_click = go_back)
+        del_path = st.selectbox("Delete", os.listdir(path))
+        st.button("🗑️", disabled= len(os.listdir(path))==0, on_click = delete, args = [del_path])
+        next_path = st.selectbox("Traverse", [name for name in os.listdir(path) if os.path.isdir(os.path.join(path, name))])
+        st.button("Next", disabled = len([entry for entry in os.listdir(path) if os.path.isdir(os.path.join(path, entry))]) == 0, on_click = next, args = [next_path])
+        st.markdown("***")
+        list_files()
 
 if __name__ == '__main__':
     main()

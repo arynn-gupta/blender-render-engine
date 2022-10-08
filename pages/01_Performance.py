@@ -3,7 +3,7 @@ import math, platform
 import psutil
 from gpuinfo.nvidia import get_gpus
 from cpuinfo import get_cpu_info
-from lib.utils import styling
+from lib.utils import styling, rendering
 
 def convert_size(size_bytes):
    if size_bytes == 0:
@@ -16,6 +16,7 @@ def convert_size(size_bytes):
 
 def main():
     styling()
+    rendering()
 
     st.title("Performance")
 
