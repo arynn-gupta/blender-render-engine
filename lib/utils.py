@@ -90,6 +90,6 @@ def execute(command, logfile):
 
 def rendering():
   loading = st.empty()
-  while "rendering" in st.session_state :
+  if "rendering" in st.session_state :
       loading = st.sidebar.success("Rendering...")
   loading = st.empty()
