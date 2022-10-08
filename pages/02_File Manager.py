@@ -49,7 +49,7 @@ def download(download_file_path, col3):
             data=file,
             file_name=f"{output_file_name}",
             mime="application/zip",
-            onclick=clear_download,
+            on_click =clear_download,
             args=(output_file_name, col3)
         )
     file.close()
