@@ -30,7 +30,12 @@ def delete(path):
         else:
             os.remove(del_path)
 
-def download(download_file_path):
+def clear_download(output_file_name, col3):
+    if os.path.exists(output_file_name):
+        os.remove(output_file_name)
+    col3.empty()
+
+def download(download_file_path, col3):
     file_path = st.session_state["current_path"]+"/"+download_file_path
     file_name = Path(file_path).stem
     output_file_name = file_name + ".zip"
@@ -39,15 +44,15 @@ def download(download_file_path):
     else:
         shutil.make_archive(file_name, 'zip', file_path)
     file = open(f"{output_file_name}", "rb")
-    st.download_button(
+    col3.download_button(
             label="Download Zip",
             data=file,
             file_name=f"{output_file_name}",
-            mime="application/zip"
+            mime="application/zip",
+            onclick=clear_download,
+            args=(output_file_name, col3)
         )
     file.close()
-    if os.path.exists(output_file_name):
-        os.remove(output_file_name)
 
 def list_files():
     path = st.session_state["current_path"]
@@ -77,15 +82,14 @@ def main():
 
         st.button("Go Back", disabled = path == og_path, on_click = go_back)
 
-        del_path = st.selectbox("Delete", os.listdir(path))
-        st.button("🗑️", disabled= len(os.listdir(path))==0, on_click = delete, args = [del_path])
-        
-        download_file_path = st.selectbox("Download", os.listdir(path))
-        st.button("Make Zip", disabled= len(os.listdir(path))==0, on_click = download, args = [download_file_path])
-
         next_path = st.selectbox("Traverse", [name for name in os.listdir(path) if os.path.isdir(os.path.join(path, name))])
         st.button("Next", disabled = len([entry for entry in os.listdir(path) if os.path.isdir(os.path.join(path, entry))]) == 0, on_click = next, args = [next_path])
         st.markdown("***")
+
+        file_path = st.selectbox("File", os.listdir(path))
+        col1, col2, col3 = st.columns(3)
+        col1.button("🗑️", disabled= len(os.listdir(path))==0, on_click = delete, args = [file_path])
+        col2.button("Make Zip", disabled= len(os.listdir(path))==0, on_click = download, args = ([file_path], col3))
 
         list_files()
 
