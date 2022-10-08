@@ -67,7 +67,7 @@ def styling():
       li:nth-child(5) span:before {  content: '''+bug+'''; }
   </style>''', unsafe_allow_html=True)
 
-def execute(command, logfile):
+def background_render(command, logfile):
   file = open("logs/"+logfile+".log", "a") 
   file.write(str(dt.datetime.now())+"\n")
   file.flush()
@@ -85,7 +85,9 @@ def execute(command, logfile):
 
   return_code = process.wait()
   if return_code:
-          raise subprocess.CalledProcessError(return_code, command)
+    raise subprocess.CalledProcessError(return_code, command)
+  else:
+    update_state("rendering = False")
 
 def sidebar():
   if rendering :

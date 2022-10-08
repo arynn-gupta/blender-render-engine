@@ -1,11 +1,11 @@
 import streamlit as st
 import wget
-import os, shutil, zipfile
+import os, subprocess, shutil, zipfile
 from streamlit.runtime.scriptrunner import add_script_run_ctx
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
-from lib.utils import styling, execute, sidebar, update_state
+from lib.utils import styling, background_render, sidebar, update_state
 from threading import Thread
 
 blender_url_dict = {
@@ -80,7 +80,7 @@ def main():
         if (not os.path.isdir(blender_version)):
             os.mkdir(blender_version)
             wget.download(blender_url)
-            execute(["tar", "-xkf", base_url, "-C", "./"+blender_version, "--strip-components=1"], logfile="blender")
+            subprocess.run(["tar", "-xkf", base_url, "-C", "./"+blender_version, "--strip-components=1"], check=True)
 
         # Enable GPU rendering (or add custom properties here)
         if not gpu_enabled and not cpu_enabled:
@@ -127,13 +127,11 @@ def main():
                 script=f'''
                     ./{blender_version}/blender -b 'project/{blend_file_path}' -P setgpu.py -E CYCLES -o '{output_path}' -noaudio -f {start_frame} -- --cycles-device "{renderer}"
                     '''
-            render = Thread(target=execute, args=(script, "render"))
+            render = Thread(target=background_render, args=(script, "render"))
             add_script_run_ctx(render)
             render.start()
         else :
             st.error("Blend file path doesn't exist.")
-
-        update_state("rendering = False")
         
 if __name__ == '__main__':
     main()
