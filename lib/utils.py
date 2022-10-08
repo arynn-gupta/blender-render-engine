@@ -89,7 +89,5 @@ def execute(command, logfile):
           raise subprocess.CalledProcessError(return_code, command)
 
 def rendering():
-  loading = st.empty()
   if "rendering" in st.session_state :
-      loading = st.sidebar.success("Rendering...")
-  loading = st.empty()
+      st.sidebar.success("Rendering...")
