@@ -69,7 +69,7 @@ def styling():
 
 def sidebar():
   if rendering :
-      st.sidebar.success("Rendering...")
+      st.sidebar.success(rendering)
 
 def update_state(var):
   path = "lib/state.py"

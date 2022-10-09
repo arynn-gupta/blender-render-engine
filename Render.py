@@ -1,12 +1,13 @@
 import streamlit as st
 import wget
 import os, subprocess, shutil, zipfile, tarfile
+import multiprocessing as mp
 import datetime as dt
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
 from lib.utils import styling, sidebar, update_state
-import multiprocessing as mp
+from lib.state import rendering
 
 blender_url_dict = {
     '2.79b'   : "https://ftp.nluug.nl/pub/graphics/blender/release/Blender2.79/blender-2.79b-linux-glibc219-x86_64.tar.bz2",
@@ -25,10 +26,14 @@ blender_url_dict = {
 }
 
 def background_render(uploaded_file, blender_version, blend_file_path, animation,  start_frame, end_frame, gpu_enabled, cpu_enabled, output_name):
-
-    update_state("rendering = True")
+        
+    update_state("rendering = 'Installing Blender...'")
 
     try :
+        file = open("logs/render.log", "a") 
+        file.write(str(dt.datetime.now())+"\n")
+        file.flush()
+
         if (os.path.isdir("project")):
             shutil.rmtree("project")
         os.mkdir("project")
@@ -47,11 +52,11 @@ def background_render(uploaded_file, blender_version, blend_file_path, animation
         blender_url = blender_url_dict[blender_version]
         base_url = os.path.basename(blender_url)
         if (not os.path.isdir(blender_version)):
-            os.mkdir(blender_version)
             wget.download(blender_url)
             file = tarfile.open(base_url)
-            file.extractall("./"+blender_version)
+            file.extractall("./")
             file.close()
+            os.rename(base_url.replace('.tar.xz', ''), blender_version)
 
         # Enable GPU rendering (or add custom properties here)
         if not gpu_enabled and not cpu_enabled:
@@ -99,9 +104,7 @@ def background_render(uploaded_file, blender_version, blend_file_path, animation
                     ./{blender_version}/blender -b 'project/{blend_file_path}' -P setgpu.py -E CYCLES -o '{output_path}' -noaudio -f {start_frame} -- --cycles-device "{renderer}"
                     '''
 
-            file = open("logs/render.log", "a") 
-            file.write(str(dt.datetime.now())+"\n")
-            file.flush()
+            update_state("rendering = 'Rendering...'")
 
             process = subprocess.Popen(script, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             for line in iter(process.stdout.readline, ""):
@@ -160,11 +163,9 @@ def main():
 
     output_name = st.text_input("Output Name", value="blender-####")
 
-    submit = st.button("Start Render")
+    submit = st.button("Start Render", disabled=rendering)
 
     if submit and uploaded_file is not None :
-        
-        st.sidebar.success("Rendering...")
         
         render = mp.Process(target=background_render, args=(uploaded_file, blender_version, blend_file_path, animation,  start_frame, end_frame, gpu_enabled, cpu_enabled, output_name), daemon=True)
         render.start()
