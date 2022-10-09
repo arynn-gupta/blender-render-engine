@@ -26,7 +26,7 @@ blender_url_dict = {
 
 def background_render(uploaded_file, blender_version, blend_file_path, animation,  start_frame, end_frame, gpu_enabled, cpu_enabled, output_name):
 
-    update_state("rendering = True")
+    st.sidebar.success("Rendering...")
 
     if (os.path.isdir("project")):
         shutil.rmtree("project")
