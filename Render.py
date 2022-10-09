@@ -29,102 +29,100 @@ def background_render(uploaded_file, blender_version, blend_file_path, animation
         
     update_state("rendering = 'Installing Blender...'")
 
-    try :
-        file = open("logs/render.log", "a") 
-        file.write(str(dt.datetime.now())+"\n")
-        file.flush()
+    file = open("logs/render.log", "a") 
+    file.write(str(dt.datetime.now())+"\n")
+    file.flush()
 
-        if (os.path.isdir("project")):
-            shutil.rmtree("project")
-        os.mkdir("project")
-        if (os.path.isdir("output")):
-            shutil.rmtree("output")
-        os.mkdir("output")
+    if (os.path.isdir("project")):
+        shutil.rmtree("project")
+    os.mkdir("project")
+    if (os.path.isdir("output")):
+        shutil.rmtree("output")
+    os.mkdir("output")
 
-        if (uploaded_file.name.split('.')[-1] == 'zip'):
-            with zipfile.ZipFile(uploaded_file, 'r') as zip_ref:
-                zip_ref.extractall("project")
-        else:
-            file = open(f"project/{uploaded_file.name}", 'wb')
-            file.write(uploaded_file.getvalue())
-            file.close()
-
-        blender_url = blender_url_dict[blender_version]
-        base_url = os.path.basename(blender_url)
-        if (not os.path.isdir(blender_version)):
-            wget.download(blender_url)
-            file = tarfile.open(base_url)
-            file.extractall("./")
-            file.close()
-            os.rename(f"{base_url.replace('.tar.xz', '')}", f"{blender_version}")
-
-        # Enable GPU rendering (or add custom properties here)
-        if not gpu_enabled and not cpu_enabled:
-            cpu_enabled=True
-        data = "import re\n"+\
-            "import bpy\n"+\
-            "scene = bpy.context.scene\n"+\
-            "scene.cycles.device = 'GPU'\n"+\
-            "prefs = bpy.context.preferences\n"+\
-            "prefs.addons['cycles'].preferences.get_devices()\n"+\
-            "cprefs = prefs.addons['cycles'].preferences\n"+\
-            "print(cprefs)\n"+\
-            "for compute_device_type in ('CUDA', 'OPENCL', 'NONE'):\n"+\
-            "    try:\n"+\
-            "        cprefs.compute_device_type = compute_device_type\n"+\
-            "        print('Device found:',compute_device_type)\n"+\
-            "        break\n"+\
-            "    except TypeError:\n"+\
-            "        pass\n"+\
-            "for device in cprefs.devices:\n"+\
-            "    if not re.match('intel', device.name, re.I):\n"+\
-            "        print('Activating',device)\n"+\
-            "        device.use = "+str(gpu_enabled)+"\n"+\
-            "    else:\n"+\
-            "        device.use = "+str(cpu_enabled)+"\n"
-        file = open('setgpu.py', 'w')
-        file.write(data)
+    if (uploaded_file.name.split('.')[-1] == 'zip'):
+        with zipfile.ZipFile(uploaded_file, 'r') as zip_ref:
+            zip_ref.extractall("project")
+    else:
+        file = open(f"project/{uploaded_file.name}", 'wb')
+        file.write(uploaded_file.getvalue())
         file.close()
-        renderer = "CUDA"
 
-        output_path = 'output/' + output_name
+    blender_url = blender_url_dict[blender_version]
+    base_url = os.path.basename(blender_url)
+    if (not os.path.isdir(blender_version)):
+        wget.download(blender_url)
+        file = tarfile.open(base_url)
+        file.extractall("./")
+        file.close()
+        os.rename(f"{base_url.replace('.tar.xz', '')}", f"{blender_version}")
 
-        if os.path.exists(f'project/{blend_file_path}'):
-            if animation:
-                if start_frame == end_frame:
-                    script=f'''
-                    ./{blender_version}/blender -b 'project/{blend_file_path}' -P setgpu.py -E CYCLES -o '{output_path}' -noaudio -a -- --cycles-device "{renderer}"
-                    '''
-                else:
-                    script=f'''
-                    ./{blender_version}/blender -b 'project/{blend_file_path}' -P setgpu.py -E CYCLES -o '{output_path}' -noaudio -s {start_frame} -e {end_frame} -a -- --cycles-device "{renderer}"
-                    '''
+    # Enable GPU rendering (or add custom properties here)
+    if not gpu_enabled and not cpu_enabled:
+        cpu_enabled=True
+    data = "import re\n"+\
+        "import bpy\n"+\
+        "scene = bpy.context.scene\n"+\
+        "scene.cycles.device = 'GPU'\n"+\
+        "prefs = bpy.context.preferences\n"+\
+        "prefs.addons['cycles'].preferences.get_devices()\n"+\
+        "cprefs = prefs.addons['cycles'].preferences\n"+\
+        "print(cprefs)\n"+\
+        "for compute_device_type in ('CUDA', 'OPENCL', 'NONE'):\n"+\
+        "    try:\n"+\
+        "        cprefs.compute_device_type = compute_device_type\n"+\
+        "        print('Device found:',compute_device_type)\n"+\
+        "        break\n"+\
+        "    except TypeError:\n"+\
+        "        pass\n"+\
+        "for device in cprefs.devices:\n"+\
+        "    if not re.match('intel', device.name, re.I):\n"+\
+        "        print('Activating',device)\n"+\
+        "        device.use = "+str(gpu_enabled)+"\n"+\
+        "    else:\n"+\
+        "        device.use = "+str(cpu_enabled)+"\n"
+    file = open('setgpu.py', 'w')
+    file.write(data)
+    file.close()
+    renderer = "CUDA"
+
+    output_path = 'output/' + output_name
+
+    if os.path.exists(f'project/{blend_file_path}'):
+        if animation:
+            if start_frame == end_frame:
+                script=f'''
+                ./{blender_version}/blender -b 'project/{blend_file_path}' -P setgpu.py -E CYCLES -o '{output_path}' -noaudio -a -- --cycles-device "{renderer}"
+                '''
             else:
                 script=f'''
-                    ./{blender_version}/blender -b 'project/{blend_file_path}' -P setgpu.py -E CYCLES -o '{output_path}' -noaudio -f {start_frame} -- --cycles-device "{renderer}"
-                    '''
+                ./{blender_version}/blender -b 'project/{blend_file_path}' -P setgpu.py -E CYCLES -o '{output_path}' -noaudio -s {start_frame} -e {end_frame} -a -- --cycles-device "{renderer}"
+                '''
+        else:
+            script=f'''
+                ./{blender_version}/blender -b 'project/{blend_file_path}' -P setgpu.py -E CYCLES -o '{output_path}' -noaudio -f {start_frame} -- --cycles-device "{renderer}"
+                '''
 
-            update_state("rendering = 'Rendering...'")
+        update_state("rendering = 'Rendering...'")
 
-            process = subprocess.Popen(script, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            for line in iter(process.stdout.readline, ""):
-                try:
-                    line = line.decode("utf-8") 
-                    if (line != ''):
-                        file.write(line)
-                        file.flush()
-                except:
-                    pass
+        process = subprocess.Popen(script, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        for line in iter(process.stdout.readline, ""):
+            try:
+                line = line.decode("utf-8") 
+                if (line != ''):
+                    file.write(line)
+                    file.flush()
+            except:
+                pass
 
-            file.close()
+        file.close()
 
-            return_code = process.wait()
-            if return_code:
-                raise subprocess.CalledProcessError(return_code, script)
-        else :
-            st.error("Blend file path doesn't exist.")
-    except :
-        pass
+        return_code = process.wait()
+        if return_code:
+            raise subprocess.CalledProcessError(return_code, script)
+    else :
+        st.error("Blend file path doesn't exist.")
+        
     update_state("rendering = ''")
 
 def main():
