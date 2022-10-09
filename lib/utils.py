@@ -68,7 +68,7 @@ def styling():
   </style>''', unsafe_allow_html=True)
 
 def sidebar():
-  if rendering :
+  if rendering!='False' :
       st.sidebar.success(rendering)
 
 def update_state(var):
