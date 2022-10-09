@@ -17,8 +17,12 @@ def  go_back():
     cur_path_idx = cur_path.rindex("/")
     st.session_state["current_path"] = st.session_state["current_path"][:cur_path_idx]
 
-def next(next_path):
-    st.session_state["current_path"] += "/"+next_path
+def next(next_path, ele):
+    path = st.session_state["current_path"] + "/"+next_path
+    if os.path.isdir(path):
+        st.session_state["current_path"] = path
+    else:
+        ele[0].error("It's a file 🥲")
 
 def delete(path):
     del_path = st.session_state["current_path"]+"/"+path
@@ -66,15 +70,13 @@ def main():
 
         st.button("Go Back", disabled = path == og_path, on_click = go_back)
 
-        next_path = st.selectbox("Traverse", sorted([name for name in os.listdir(path) if os.path.isdir(os.path.join(path, name))], key=sort_by_type))
-        st.button("Next", disabled = len([entry for entry in os.listdir(path) if os.path.isdir(os.path.join(path, entry))]) == 0, on_click = next, args = [next_path])
-
         file_path = st.selectbox("File", sorted(os.listdir(path), key=sort_by_type))
-        col1, col2, col3, col4 = st.columns(4)
-        col5 = st.columns(1)
-        col1.button("View File", disabled= len(os.listdir(path))==0, on_click = view_file, args = (file_path, col5))
-        col2.button("Make Zip", disabled= len(os.listdir(path))==0, on_click = make_zip, args = (file_path, col3))
-        col4.button("🗑️", disabled= len(os.listdir(path))==0, on_click = delete, args = [file_path])
+        col1, col2, col3, col4, col5 = st.columns(5)
+        row = st.columns(1)
+        col1.button("Traverse", disabled = len([entry for entry in os.listdir(path) if os.path.isdir(os.path.join(path, entry))]) == 0, on_click = next, args = (file_path, row))
+        col2.button("View File", disabled= len(os.listdir(path))==0, on_click = view_file, args = (file_path, row))
+        col3.button("Make Zip", disabled= len(os.listdir(path))==0, on_click = make_zip, args = (file_path, col4))
+        col5.button("🗑️", disabled= len(os.listdir(path))==0, on_click = delete, args = [file_path])
 
         st.markdown("***")
         st.write("")

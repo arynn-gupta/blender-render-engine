@@ -26,7 +26,7 @@ blender_url_dict = {
 
 def background_render(uploaded_file, blender_version, blend_file_path, animation,  start_frame, end_frame, gpu_enabled, cpu_enabled, output_name):
 
-    st.sidebar.success("Rendering...")
+    update_state("rendering = True")
 
     if (os.path.isdir("project")):
         shutil.rmtree("project")
@@ -161,6 +161,7 @@ def main():
 
     if submit and uploaded_file is not None :
         
+        st.sidebar.success("Rendering...")
         render = mp.Process(target=background_render, args=(uploaded_file, blender_version, blend_file_path, animation,  start_frame, end_frame, gpu_enabled, cpu_enabled, output_name), daemon=True)
         render.start()
         
