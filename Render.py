@@ -56,7 +56,7 @@ def background_render(uploaded_file, blender_version, blend_file_path, animation
             file = tarfile.open(base_url)
             file.extractall("./")
             file.close()
-            os.rename(base_url.replace('.tar.xz', ''), blender_version)
+            os.rename(f"{base_url.replace('.tar.xz', '')}", f"{blender_version}")
 
         # Enable GPU rendering (or add custom properties here)
         if not gpu_enabled and not cpu_enabled:
