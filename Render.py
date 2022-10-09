@@ -125,7 +125,7 @@ def background_render(uploaded_file, blender_version, blend_file_path, animation
             st.error("Blend file path doesn't exist.")
     except :
         pass
-    update_state("rendering = 'False'")
+    update_state("rendering = ''")
 
 def main():
     styling()
@@ -135,7 +135,7 @@ def main():
 
     if "initialized" not in st.session_state :
         st.session_state["initialized"] = True
-        update_state("rendering = 'False'")
+        update_state("rendering = ''")
 
     if not os.path.isdir("logs"):
         os.mkdir("logs")
@@ -163,7 +163,7 @@ def main():
 
     output_name = st.text_input("Output Name", value="blender-####")
 
-    submit = st.button("Start Render", disabled=rendering=='False')
+    submit = st.button("Start Render", disabled=rendering=='')
 
     if submit and uploaded_file is not None :
         
