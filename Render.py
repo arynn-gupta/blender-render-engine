@@ -163,7 +163,7 @@ def main():
 
     output_name = st.text_input("Output Name", value="blender-####")
 
-    submit = st.button("Start Render", disabled=rendering=='')
+    submit = st.button("Start Render", disabled=rendering!='')
 
     if submit and uploaded_file is not None :
         
