@@ -2,7 +2,7 @@ import streamlit as st
 from lib.utils import styling, sidebar, make_zip
 import os, shutil
 
-# list filse in dict format
+# list files in dict format
 # def tree(dir, folder):
 #     for filename in os.listdir(dir):
 #         if os.path.isdir(os.path.join(dir,filename)):
@@ -40,6 +40,15 @@ def list_files():
 def sort_by_type(x):
     return os.path.splitext(x)[::-1]
 
+def view_file(path, ele):
+    if os.path.isfile(path):
+        file = open(path,mode='r')
+        for line in file:
+            ele[0].write(line)
+        file.close()
+    else:
+        ele[0].error("It's a folder 🥲")
+
 def main():
     styling()
     sidebar()
@@ -61,11 +70,14 @@ def main():
         st.button("Next", disabled = len([entry for entry in os.listdir(path) if os.path.isdir(os.path.join(path, entry))]) == 0, on_click = next, args = [next_path])
 
         file_path = st.selectbox("File", sorted(os.listdir(path), key=sort_by_type))
-        col1, col2, col3 = st.columns(3)
-        col1.button("🗑️", disabled= len(os.listdir(path))==0, on_click = delete, args = [file_path])
+        col1, col2, col3, col4 = st.columns(4)
+        col5 = st.columns(1)
+        col1.button("View File", disabled= len(os.listdir(path))==0, on_click = view_file, args = (file_path, col5))
         col2.button("Make Zip", disabled= len(os.listdir(path))==0, on_click = make_zip, args = (file_path, col3))
+        col4.button("🗑️", disabled= len(os.listdir(path))==0, on_click = delete, args = [file_path])
 
         st.markdown("***")
+        st.write("")
         list_files()
 
 if __name__ == '__main__':
