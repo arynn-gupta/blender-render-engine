@@ -70,7 +70,7 @@ def main():
 
         st.button("Go Back", disabled = path == og_path, on_click = go_back)
 
-        file_path = st.selectbox("File", sorted(os.listdir(path), key=sort_by_type))
+        file_path = st.selectbox("", sorted(os.listdir(path), key=sort_by_type))
         col1, col2, col3, col4, col5 = st.columns(5)
         row = st.columns(1)
         col1.button("Traverse", disabled = len([entry for entry in os.listdir(path) if os.path.isdir(os.path.join(path, entry))]) == 0, on_click = next, args = (file_path, row))

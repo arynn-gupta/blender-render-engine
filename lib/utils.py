@@ -93,7 +93,7 @@ def make_zip(download_file_path, ele):
     if(os.path.exists(output_file_name)):
       file = open(f"{output_file_name}", "rb")
       ele.download_button(
-              label="Download Zip",
+              label="⬇️",
               data=file,
               file_name=f"{output_file_name}",
               mime="application/zip",
