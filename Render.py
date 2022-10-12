@@ -198,7 +198,7 @@ def main():
                             if mimestart in ['image']:
                                 st.image(os.path.join(output_folder, i))
                             if mimestart in ['video']:
-                                st.videod(os.path.join(output_folder, i))
+                                st.video(os.path.join(output_folder, i))
                         output_images.append(i)
             
         info.success("Finished !")
