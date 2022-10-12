@@ -128,6 +128,8 @@ def main():
         blender_url = blender_url_dict[blender_version]
         base_url = os.path.basename(blender_url)
         if (not os.path.isdir(blender_version)):
+            if os.path.exists(base_url):
+                os.remove(base_url)
             wget.download(blender_url)
             file = tarfile.open(base_url)
             file.extractall("./")
@@ -182,6 +184,7 @@ def main():
         for i in script:
 
             output = subprocess.check_output(i, shell=True)
+            st.write(i)
             file = open(log_file, "a") 
             file.write(output.decode("utf-8") +"\n")
             file.close()
