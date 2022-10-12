@@ -87,18 +87,18 @@ def main():
         output_images = []
         mimetypes.init()
 
-        if os.path.isdir(project_folder):
+        if os.path.exists(project_folder):
             shutil.rmtree(project_folder)
         os.makedirs(project_folder)
 
-        if os.path.isdir(output_folder):
+        if os.path.exists(output_folder):
             shutil.rmtree(output_folder)
         os.makedirs(output_folder)
 
-        if os.path.isfile(setup_file):
+        if os.path.exists(setup_file):
             os.remove(setup_file)
 
-        if not os.path.isdir("logs"):
+        if not os.path.exists("logs"):
             os.mkdir("logs")
         
         if (uploaded_file.name.split('.')[-1] == 'zip'):
@@ -123,7 +123,7 @@ def main():
         file.write("\n")
         file.close()
 
-        info.success("Installing Blender...")
+        info.success(f"Installing Blender {blender_version} ...")
 
         blender_url = blender_url_dict[blender_version]
         base_url = os.path.basename(blender_url)
