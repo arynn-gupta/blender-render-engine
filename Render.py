@@ -192,7 +192,6 @@ def main():
         for i in script:
 
             output = subprocess.check_output(i, shell=True)
-            st.write(i)
             file = open(log_file, "a") 
             file.write(output.decode("utf-8") +"\n")
             file.close()
