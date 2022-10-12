@@ -36,6 +36,10 @@ def main():
     if "user_id" not in st.session_state :
         st.session_state["user_id"] = generate_random_id()
 
+    if "original_path" not in st.session_state :
+        st.session_state["original_path"] = "."
+        st.session_state["current_path"] = st.session_state["original_path"]
+
     user_id = st.session_state["user_id"]
     
     uploaded_file = st.file_uploader("", type=['blend', 'zip'])
