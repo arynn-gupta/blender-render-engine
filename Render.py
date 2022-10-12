@@ -165,16 +165,16 @@ def main():
         if animation:
             if continuous_render:
                 script.append(f'''
-                ./{blender_version}/blender -b '{blend_file_path}' -P setgpu.py -E CYCLES -o '{output_path}' -noaudio -s {start_frame} -e {end_frame} -a -- --cycles-device "{renderer}"
+                ./{blender_version}/blender -b '{blend_file_path}' -P '{setup_file}' -E CYCLES -o '{output_path}' -noaudio -s {start_frame} -e {end_frame} -a -- --cycles-device "{renderer}"
                 ''')
             else :
                 for i in range(start_frame, end_frame+1):
                     script.append(f'''
-                        ./{blender_version}/blender -b '{blend_file_path}' -P setgpu.py -E CYCLES -o '{output_path}' -noaudio -f {i} -- --cycles-device "{renderer}"
+                        ./{blender_version}/blender -b '{blend_file_path}' -P '{setup_file}' -E CYCLES -o '{output_path}' -noaudio -f {i} -- --cycles-device "{renderer}"
                         ''')
         else:
             script.append(f'''
-                ./{blender_version}/blender -b '{blend_file_path}' -P setgpu.py -E CYCLES -o '{output_path}' -noaudio -f {start_frame} -- --cycles-device "{renderer}"
+                ./{blender_version}/blender -b '{blend_file_path}' -P '{setup_file}' -E CYCLES -o '{output_path}' -noaudio -f {start_frame} -- --cycles-device "{renderer}"
                 ''')
 
         info.success("Rendering...")
