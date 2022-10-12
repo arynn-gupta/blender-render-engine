@@ -48,10 +48,10 @@ def main():
     if render_type == "Animation":
         animation = True
         start_frame = st.number_input("Start Frame", min_value=0 , step=1)
-        end_frame = st.number_input("End Frame", min_value=0 , step=1)
+        end_frame = st.number_input("End Frame", min_value=0, max_value=9999 , step=1)
     else:
         animation = False
-        start_frame = st.number_input("Frame", min_value=0 , step=1)
+        start_frame = st.number_input("Frame", min_value=0, max_value=9999 , step=1)
         end_frame = start_frame
 
     output_name = st.text_input("Output Name", value="blender-####")
@@ -171,6 +171,9 @@ def main():
                 ''')
             else :
                 for i in range(start_frame, end_frame+1):
+                    digits = len(str(i))
+                    output_path = i.join(output_path.rsplit("#"*digits, 1))
+                    output_path = output_path.replace("#",'0')
                     script.append(f'''
                         ./{blender_version}/blender -b '{blend_file_path}' -P '{setup_file}' -E CYCLES -o '{output_path}' -noaudio -f {i} -- --cycles-device "{renderer}"
                         ''')
