@@ -108,7 +108,7 @@ def main():
             info.success("Extracting Project...")
             with zipfile.ZipFile(uploaded_file, 'r') as zip_ref:
                 zip_ref.extractall(project_folder)
-            if not os.path.exists(f''):
+            if not os.path.exists(blend_file_path):
                 info.error("Couldn't find blend file inside project please provide a valid Blend File Path !")
                 st.stop()
         else:
