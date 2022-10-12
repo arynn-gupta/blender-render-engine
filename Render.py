@@ -63,6 +63,8 @@ def main():
         st.info("This will increase render speed but you won't be able to see any output !")
 
     submit = st.button("Start Render")
+    
+    info = st.empty()
 
     if submit and uploaded_file is not None :
 
@@ -77,7 +79,6 @@ def main():
         output_path = output_folder + '/' + output_name
         setup_file = "user_data/setgpu_" + user_id + ".py"
         renderer = "CUDA"
-        info = st.empty()
         script = []
         output_images = []
         mimetypes.init()
@@ -112,9 +113,9 @@ def main():
 
         file = open(log_file, "a") 
         file.write("\n")
-        file.write("-"*11)
+        file.write("-"*51)
         file.write("\n"+"Generated on : "+str(dt.datetime.now())+"\n")
-        file.write("-"*11)
+        file.write("-"*51)
         file.write("\n")
         file.close()
 
