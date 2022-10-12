@@ -62,11 +62,11 @@ def main():
     if continuous_render:
         st.info("This will increase render speed but you won't be able to see any output !")
 
-    submit = st.button("Start Render")
+    submitted = st.button("Start Render")
     
     info = st.empty()
 
-    if submit is not None :
+    if submitted :
 
         if uploaded_file is None :
             info.error("Please upload a file !")
