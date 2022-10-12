@@ -183,10 +183,10 @@ def main():
         info.success("Rendering...")
 
         for i in script:
-            
+
             output = subprocess.check_output(script, shell=True)
             file = open(log_file, "a") 
-            file.write(output+"\n")
+            file.write(output.decode("utf-8") +"\n")
             file.close()
 
             if not continuous_render :
