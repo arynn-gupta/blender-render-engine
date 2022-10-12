@@ -3,4 +3,3 @@ psutil
 gpu-info
 py-cpuinfo
 wget
-streamlit_autorefresh

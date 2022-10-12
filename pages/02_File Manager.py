@@ -1,16 +1,6 @@
 import streamlit as st
-from lib.utils import styling, sidebar, make_zip
+from lib.utils import styling, make_zip
 import os, shutil
-
-# list files in dict format
-# def tree(dir, folder):
-#     for filename in os.listdir(dir):
-#         if os.path.isdir(os.path.join(dir,filename)):
-#             folder[filename] ={}
-#             tree(os.path.join(dir,filename), folder[filename])
-#         else:
-#             folder[filename] = "file"
-#     return folder
 
 def  go_back():
     cur_path = st.session_state["current_path"]
@@ -55,7 +45,6 @@ def view_file(path, ele):
 
 def main():
     styling()
-    sidebar()
 
     st.title("File Manager")
 

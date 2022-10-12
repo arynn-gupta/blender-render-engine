@@ -2,7 +2,6 @@ import streamlit as st
 import os, shutil
 from icons import *
 from pathlib import Path
-from lib.state import rendering
 
 style='''
 div.css-1gk2i2l.e17lx80j0 {
@@ -66,16 +65,6 @@ def styling():
       li:nth-child(4) span:before {  content: '''+folder+'''; }
       li:nth-child(5) span:before {  content: '''+bug+'''; }
   </style>''', unsafe_allow_html=True)
-
-def sidebar():
-  if rendering!='' :
-      st.sidebar.success(rendering)
-
-def update_state(var):
-  path = "lib/state.py"
-  file = open(path, "w") 
-  file.write(var)
-  file.close()
 
 def clear_download(output_file_name, ele):
     if os.path.exists(output_file_name):
