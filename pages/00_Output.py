@@ -10,7 +10,7 @@ def main():
     st.title("Output")
 
     if "user_id" in st.session_state:
-        output_folder = "output_" + st.session_state["user_id"]
+        output_folder = "user_data/output_" + st.session_state["user_id"]
         if os.path.exists(output_folder):
 
             col1, col2 = st.columns(2)

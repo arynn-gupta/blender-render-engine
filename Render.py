@@ -75,14 +75,14 @@ def main():
 
         if animation :
             if start_frame == end_frame or start_frame>end_frame :
-                st.error("Please enter a valid start and end frame !")
-                submit = None
+                info.error("Please enter a valid start and end frame !")
+                st.stop()
 
         log_file = "logs/log_" + user_id + ".log"
-        project_folder = "project_" + user_id
-        output_folder = "output_" + user_id
+        project_folder = "user_data/project_" + user_id
+        output_folder = "user_data/output_" + user_id
         output_path = output_folder + '/' + output_name
-        setup_file = "setgpu_" + user_id + ".py"
+        setup_file = "user_data/setgpu_" + user_id + ".py"
         renderer = "CUDA"
         info = st.empty()
         script = []
@@ -91,11 +91,11 @@ def main():
 
         if os.path.isdir(project_folder):
             shutil.rmtree(project_folder)
-        os.mkdir(project_folder)
+        os.makedirs(project_folder)
 
         if os.path.isdir(output_folder):
             shutil.rmtree(output_folder)
-        os.mkdir(output_folder)
+        os.makedirs(output_folder)
 
         if os.path.isfile(setup_file):
             os.remove(setup_file)
@@ -109,8 +109,8 @@ def main():
             with zipfile.ZipFile(uploaded_file, 'r') as zip_ref:
                 zip_ref.extractall(project_folder)
             if not os.path.exists(f''):
-                st.error("Couldn't find blend file inside project please provide a valid Blend File Path !")
-                submit = None
+                info.error("Couldn't find blend file inside project please provide a valid Blend File Path !")
+                st.stop()
         else:
             blend_file_path = project_folder + "/" + uploaded_file.name
             file = open(blend_file_path, 'wb')
