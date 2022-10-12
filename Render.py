@@ -8,13 +8,6 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
 from lib.utils import styling
 
-banner = '''
-   ___              __        _  __
-  / _ \___ ___  ___/ /__ ____| |/_/
- / , _/ -_) _ \/ _  / -_) __/>  <  
-/_/|_|\__/_//_/\_,_/\__/_/ /_/|_|  v1.0
-'''
-
 blender_url_dict = {
     '2.79b'   : "https://ftp.nluug.nl/pub/graphics/blender/release/Blender2.79/blender-2.79b-linux-glibc219-x86_64.tar.bz2",
     '2.80rc3' : "https://ftp.nluug.nl/pub/graphics/blender/release/Blender2.80/blender-2.80rc3-linux-glibc217-x86_64.tar.bz2",
@@ -119,10 +112,9 @@ def main():
 
         file = open(log_file, "a") 
         file.write("\n")
-        file.write("-"*21)
-        file.write("Generated on : "+str(dt.datetime.now())+"\n")
-        file.write(banner)
-        file.write("-"*21)
+        file.write("-"*11)
+        file.write("\n"+"Generated on : "+str(dt.datetime.now())+"\n")
+        file.write("-"*11)
         file.write("\n")
         file.close()
 
@@ -181,6 +173,8 @@ def main():
                 ''')
 
         info.success("Rendering...")
+
+        st.markdown('***')
 
         for i in script:
 
