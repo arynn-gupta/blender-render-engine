@@ -66,11 +66,15 @@ def main():
     
     info = st.empty()
 
-    if submit and uploaded_file is not None :
+    if submit is not None :
+
+        if uploaded_file is None :
+            info.error("Please upload a file !")
+            st.stop()
 
         if animation :
             if start_frame == end_frame or start_frame>end_frame :
-                info.error("Please enter a valid start and end frame !")
+                info.error("Please enter a valid Start and End frame !")
                 st.stop()
 
         log_file = "logs/log_" + user_id + ".log"
