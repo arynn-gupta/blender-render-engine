@@ -175,26 +175,24 @@ def main():
 
         info.success("Rendering...")
 
-        st.markdown('***')
-
         for i in script:
 
-            output = subprocess.check_output(script, shell=True)
+            output = subprocess.check_output(i, shell=True)
             file = open(log_file, "a") 
             file.write(output.decode("utf-8") +"\n")
             file.close()
 
             if not continuous_render :
-                for i in os.listdir(output_folder):
-                    if i not in output_images:
-                        mimestart = mimetypes.guess_type(i)[0]
+                for f in os.listdir(output_folder):
+                    if f not in output_images:
+                        mimestart = mimetypes.guess_type(f)[0]
                         if mimestart != None:
                             mimestart = mimestart.split('/')[0]
                             if mimestart in ['image']:
-                                st.image(os.path.join(output_folder, i))
+                                st.image(os.path.join(output_folder, f))
                             if mimestart in ['video']:
-                                st.video(os.path.join(output_folder, i))
-                        output_images.append(i)
+                                st.video(os.path.join(output_folder, f))
+                        output_images.append(f)
             
         info.success("Finished !")
         shutil.rmtree(project_folder)
