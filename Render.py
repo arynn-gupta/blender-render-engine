@@ -31,14 +31,15 @@ def main():
 
     if "user_id" not in st.session_state :
         st.session_state["user_id"] = generate_random_id()
-        
+
     user_id = st.session_state["user_id"]
 
     if "original_path" not in st.session_state :
-        st.session_state["original_path"] = f"user_data/{user_id}"
+        # Debug
+        st.session_state["original_path"] = "."
+        # st.session_state["original_path"] = f"user_data/{user_id}"
         st.session_state["current_path"] = st.session_state["original_path"]
 
-    
     uploaded_file = st.file_uploader("", type=['blend', 'zip'])
     blender_version = st.selectbox("Blender Version", ['2.79b', '2.80rc3', '2.81a', '2.82a', '2.83.20', '2.90.1', '2.91.2', '2.92.0', '2.93.10', '3.0.1', '3.1.2', '3.2.2', '3.3.0'][::-1])
     if( uploaded_file is not None ):
@@ -82,9 +83,11 @@ def main():
         project_folder = f"user_data/{user_id}/project"
         output_folder = f"user_data/{user_id}/output"
         output_path = output_folder + '/' + output_name
+        temp_folder = f"user_data/{user_id}/temp"
+        temp_output_path = temp_folder + '/' + output_name
         setup_file = f"user_data/{user_id}/setgpu.py"
         renderer = "CUDA"
-        script = []
+        scripts = []
         output_media = []
         mimetypes.init()
 
@@ -96,11 +99,12 @@ def main():
             shutil.rmtree(output_folder)
         os.makedirs(output_folder)
 
+        if os.path.exists(temp_folder):
+            shutil.rmtree(temp_folder)
+        os.makedirs(temp_folder)
+
         if os.path.exists(setup_file):
             os.remove(setup_file)
-
-        if not os.path.exists("logs"):
-            os.mkdir("logs")
         
         if (uploaded_file.name.split('.')[-1] == 'zip'):
             blend_file_path = project_folder + "/" + blend_file_path
@@ -167,43 +171,43 @@ def main():
 
         if animation:
             if continuous_render:
-                script.append(f'''
+                scripts.append(f'''
                 ./{blender_version}/blender -b '{blend_file_path}' -P '{setup_file}' -E CYCLES -o '{output_path}' -noaudio -s {start_frame} -e {end_frame} -a -- --cycles-device "{renderer}"
                 ''')
             else :
                 for i in range(start_frame, end_frame+1):
-                    script.append(f'''
-                        ./{blender_version}/blender -b '{blend_file_path}' -P '{setup_file}' -E CYCLES -o '{output_path}' -noaudio -f {i} -- --cycles-device "{renderer}"
+                    scripts.append(f'''
+                        ./{blender_version}/blender -b '{blend_file_path}' -P '{setup_file}' -E CYCLES -o '{temp_output_path}' -noaudio -f {i} -- --cycles-device "{renderer}"
                         ''')
         else:
-            script.append(f'''
-                ./{blender_version}/blender -b '{blend_file_path}' -P '{setup_file}' -E CYCLES -o '{output_path}' -noaudio -f {start_frame} -- --cycles-device "{renderer}"
+            scripts.append(f'''
+                ./{blender_version}/blender -b '{blend_file_path}' -P '{setup_file}' -E CYCLES -o '{temp_output_path}' -noaudio -f {start_frame} -- --cycles-device "{renderer}"
                 ''')
 
         info.success("Rendering...")
 
-        for i in script:
+        for i, script in enumerate(scripts):
 
-            output = subprocess.check_output(i, shell=True)
+            output = subprocess.check_output(script, shell=True)
             file = open(log_file, "a") 
             file.write(output.decode("utf-8") +"\n")
             file.close()
 
             if not continuous_render :
-                for frame, file_name in enumerate(os.listdir(output_folder)):
-                    file_name_without_ext = os.path.splitext(file_name)[0]
-                    extension = os.path.splitext(file_name)[1]
-                    new_file_name = rename_file(frame, file_name_without_ext) + extension
-                    if new_file_name not in output_media:
-                        os.rename(os.path.join(output_folder, file_name), os.path.join(output_folder, new_file_name))
-                        mimestart = mimetypes.guess_type(new_file_name)[0]
-                        if mimestart != None:
-                            mimestart = mimestart.split('/')[0]
-                            if mimestart in ['image']:
-                                st.image(os.path.join(output_folder, new_file_name))
-                            if mimestart in ['video']:
-                                st.video(os.path.join(output_folder, new_file_name))
-                        output_media.append(new_file_name)
+                file_name = os.listdir(temp_folder)[0]
+                file_name_without_ext = os.path.splitext(file_name)[0]
+                extension = os.path.splitext(file_name)[1]
+                new_file_name = rename_file(i, file_name_without_ext) + extension
+                if new_file_name not in output_media:
+                    shutil.move(os.path.join(temp_output_path, file_name), os.path.join(output_folder, new_file_name))
+                    mimestart = mimetypes.guess_type(new_file_name)[0]
+                    if mimestart != None:
+                        mimestart = mimestart.split('/')[0]
+                        if mimestart in ['image']:
+                            st.image(os.path.join(output_folder, new_file_name))
+                        if mimestart in ['video']:
+                            st.video(os.path.join(output_folder, new_file_name))
+                    output_media.append(new_file_name)
             
         info.success("Finished !")
         shutil.rmtree(project_folder)
