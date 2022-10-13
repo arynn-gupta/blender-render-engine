@@ -1,5 +1,5 @@
 import streamlit as st
-import os, shutil
+import os, shutil, random, string
 from icons import *
 from pathlib import Path
 
@@ -90,3 +90,19 @@ def make_zip(download_file_path, ele):
               args=(output_file_name, ele)
           )
     file.close()
+
+
+@st.cache
+def generate_random_id():
+  return ''.join(random.choices(string.ascii_letters + string.digits, k=16))
+
+def rename_file(i, output_path):
+    digits = len(str(i))
+    new_output_path = output_path.replace("#",'0')
+    consecutive_zeros ="0"*digits
+    if consecutive_zeros in new_output_path:
+        new_output_path = str(i).join(new_output_path.rsplit(consecutive_zeros, 1))
+    else:
+        new_output_path = new_output_path.replace("0",'')
+        new_output_path = new_output_path + str(i) 
+    return new_output_path

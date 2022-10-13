@@ -8,7 +8,7 @@ def main():
     st.title("Debug")
 
     if "user_id" in st.session_state:
-        logfile_path = "logs/log_" + st.session_state["user_id"] + ".log"
+        logfile_path = f"user_data/{st.session_state['user_id']}/render.log"
         if os.path.exists(logfile_path):
             file = open(logfile_path,mode='r')
             for line in file:

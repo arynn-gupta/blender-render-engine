@@ -1,12 +1,12 @@
 import streamlit as st
 import wget
-import os, subprocess, shutil, zipfile, tarfile, random, string
+import os, subprocess, shutil, zipfile, tarfile
 import datetime as dt
 import mimetypes
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
-from lib.utils import styling
+from lib.utils import styling, generate_random_id, rename_file
 
 blender_url_dict = {
     '2.79b'   : "https://ftp.nluug.nl/pub/graphics/blender/release/Blender2.79/blender-2.79b-linux-glibc219-x86_64.tar.bz2",
@@ -24,10 +24,6 @@ blender_url_dict = {
     '3.3.0'   : "https://ftp.nluug.nl/pub/graphics/blender/release/Blender3.3/blender-3.3.0-linux-x64.tar.xz"
 }
 
-@st.cache
-def generate_random_id():
-  return ''.join(random.choices(string.ascii_letters + string.digits, k=16))
-
 def main():
     styling()
     
@@ -37,7 +33,7 @@ def main():
         st.session_state["user_id"] = generate_random_id()
 
     if "original_path" not in st.session_state :
-        st.session_state["original_path"] = "user_data"
+        st.session_state["original_path"] = f"user_data/{user_id}"
         st.session_state["current_path"] = st.session_state["original_path"]
 
     user_id = st.session_state["user_id"]
@@ -81,14 +77,14 @@ def main():
                 info.error("Please enter a valid Start and End frame !")
                 st.stop()
 
-        log_file = "logs/log_" + user_id + ".log"
-        project_folder = "user_data/project_" + user_id
-        output_folder = "user_data/output_" + user_id
+        log_file = f"user_data/{user_id}/render.log"
+        project_folder = f"user_data/{user_id}/project"
+        output_folder = f"user_data/{user_id}/output"
         output_path = output_folder + '/' + output_name
-        setup_file = "user_data/setgpu_" + user_id + ".py"
+        setup_file = f"user_data/{user_id}/setgpu.py"
         renderer = "CUDA"
         script = []
-        output_images = []
+        output_media = []
         mimetypes.init()
 
         if os.path.exists(project_folder):
@@ -175,16 +171,8 @@ def main():
                 ''')
             else :
                 for i in range(start_frame, end_frame+1):
-                    digits = len(str(i))
-                    new_output_path = output_path.replace("#",'0')
-                    consecutive_zeros ="0"*digits
-                    if consecutive_zeros in new_output_path:
-                        new_output_path = str(i).join(new_output_path.rsplit(consecutive_zeros, 1)) + "-"
-                    else:
-                        new_output_path = new_output_path.replace("0",'')
-                        new_output_path = new_output_path + str(i) + "-"
                     script.append(f'''
-                        ./{blender_version}/blender -b '{blend_file_path}' -P '{setup_file}' -E CYCLES -o '{new_output_path}' -noaudio -f {i} -- --cycles-device "{renderer}"
+                        ./{blender_version}/blender -b '{blend_file_path}' -P '{setup_file}' -E CYCLES -o '{output_path}' -noaudio -f {i} -- --cycles-device "{renderer}"
                         ''')
         else:
             script.append(f'''
@@ -201,16 +189,20 @@ def main():
             file.close()
 
             if not continuous_render :
-                for f in os.listdir(output_folder):
-                    if f not in output_images:
-                        mimestart = mimetypes.guess_type(f)[0]
+                for frame, file_name in enumerate(os.listdir(output_folder)):
+                    file_name_without_ext = os.path.splitext(file_name)[0]
+                    extension = os.path.splitext(file_name)[1]
+                    new_file_name = rename_file(frame, file_name_without_ext) + extension
+                    if new_file_name not in output_media:
+                        os.rename(os.path.join(output_folder, file_name), os.path.join(output_folder, new_file_name))
+                        mimestart = mimetypes.guess_type(new_file_name)[0]
                         if mimestart != None:
                             mimestart = mimestart.split('/')[0]
                             if mimestart in ['image']:
-                                st.image(os.path.join(output_folder, f))
+                                st.image(os.path.join(output_folder, new_file_name))
                             if mimestart in ['video']:
-                                st.video(os.path.join(output_folder, f))
-                        output_images.append(f)
+                                st.video(os.path.join(output_folder, new_file_name))
+                        output_media.append(new_file_name)
             
         info.success("Finished !")
         shutil.rmtree(project_folder)
