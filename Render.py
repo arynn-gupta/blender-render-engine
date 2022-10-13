@@ -175,7 +175,8 @@ def main():
                 ''')
             else :
                 for i in range(start_frame, end_frame+1):
-                    new_output_path = output_path.replace("#",'0')
+                    new_output_path = output_path.replace("#",'')
+                    new_output_path = new_output_path + str(i)
                     script.append(f'''
                         ./{blender_version}/blender -b '{blend_file_path}' -P '{setup_file}' -E CYCLES -o '{new_output_path}' -noaudio -f {i} -- --cycles-device "{renderer}"
                         ''')
