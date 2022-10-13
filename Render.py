@@ -37,7 +37,7 @@ def main():
         st.session_state["user_id"] = generate_random_id()
 
     if "original_path" not in st.session_state :
-        st.session_state["original_path"] = "."
+        st.session_state["original_path"] = "user_data"
         st.session_state["current_path"] = st.session_state["original_path"]
 
     user_id = st.session_state["user_id"]
