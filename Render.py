@@ -31,12 +31,13 @@ def main():
 
     if "user_id" not in st.session_state :
         st.session_state["user_id"] = generate_random_id()
+        
+    user_id = st.session_state["user_id"]
 
     if "original_path" not in st.session_state :
         st.session_state["original_path"] = f"user_data/{user_id}"
         st.session_state["current_path"] = st.session_state["original_path"]
 
-    user_id = st.session_state["user_id"]
     
     uploaded_file = st.file_uploader("", type=['blend', 'zip'])
     blender_version = st.selectbox("Blender Version", ['2.79b', '2.80rc3', '2.81a', '2.82a', '2.83.20', '2.90.1', '2.91.2', '2.92.0', '2.93.10', '3.0.1', '3.1.2', '3.2.2', '3.3.0'][::-1])
