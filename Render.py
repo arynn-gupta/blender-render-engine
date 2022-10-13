@@ -179,10 +179,10 @@ def main():
                     new_output_path = output_path.replace("#",'0')
                     consecutive_zeros ="0"*digits
                     if consecutive_zeros in new_output_path:
-                        new_output_path = str(i).join(new_output_path.rsplit(consecutive_zeros, 1))
+                        new_output_path = str(i).join(new_output_path.rsplit(consecutive_zeros, 1)) + "-"
                     else:
                         new_output_path = new_output_path.replace("0",'')
-                        new_output_path = new_output_path + str(i)
+                        new_output_path = new_output_path + str(i) + "-"
                     script.append(f'''
                         ./{blender_version}/blender -b '{blend_file_path}' -P '{setup_file}' -E CYCLES -o '{new_output_path}' -noaudio -f {i} -- --cycles-device "{renderer}"
                         ''')
