@@ -36,8 +36,8 @@ def main():
 
     if "original_path" not in st.session_state :
         # Debug
-        st.session_state["original_path"] = "."
-        # st.session_state["original_path"] = f"user_data/{user_id}"
+        # st.session_state["original_path"] = "."
+        st.session_state["original_path"] = f"user_data/{user_id}"
         st.session_state["current_path"] = st.session_state["original_path"]
 
     uploaded_file = st.file_uploader("", type=['blend', 'zip'])
@@ -188,7 +188,7 @@ def main():
 
         for i, script in enumerate(scripts):
 
-            output = subprocess.check_output(script, shell=True)
+            output = subprocess.check_output(script)
             file = open(log_file, "a") 
             file.write(output.decode("utf-8") +"\n")
             file.close()
