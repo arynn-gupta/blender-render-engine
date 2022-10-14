@@ -4,7 +4,7 @@ import os, subprocess, shutil, zipfile, tarfile
 import datetime as dt
 import mimetypes
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 from lib.utils import styling, generate_random_id, rename_file
 
