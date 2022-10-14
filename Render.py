@@ -187,10 +187,7 @@ def main():
         info.success("Rendering...")
 
         for i, script in enumerate(scripts):
-            try:
-                output = subprocess.run(script, capture_output =True)
-            except:
-                pass
+            output = subprocess.run(script, capture_output =True)
             file = open(log_file, "a") 
             file.write(output.stdout.decode("utf-8") +"\n")
             file.write("-"*51)
