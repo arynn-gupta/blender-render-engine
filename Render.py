@@ -187,10 +187,20 @@ def main():
         info.success("Rendering...")
 
         for i, script in enumerate(scripts):
-
-            output = subprocess.check_output(script)
+            try:
+                output = subprocess.run(script, capture_output =True)
+            except:
+                pass
             file = open(log_file, "a") 
-            file.write(output.decode("utf-8") +"\n")
+            file.write(output.stdout.decode("utf-8") +"\n")
+            file.write("-"*51)
+            file.write("\n Errors : \n")
+            if output.stderr.decode("utf-8") == "":
+                file.write("None \n")
+            else:
+                file.write(output.stderr.decode("utf-8") +"\n")
+            file.write("-"*51)
+            file.write("\n")
             file.close()
 
             if not continuous_render :
